@@ -15,16 +15,10 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
-public class temperatureFragmentView extends Fragment
+public class HumidityFragmentView extends Fragment
 {
-    private final String TAG = "TempFragment";
     private GraphView graph;
     protected Context mContext;
-
-    public temperatureFragmentView()
-    {
-
-    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
@@ -48,7 +42,7 @@ public class temperatureFragmentView extends Fragment
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        View view =  inflater.inflate(R.layout.temperature_layout, container, false);
+        View view =  inflater.inflate(R.layout.humidity_layout, container, false);
 
         graph = view.findViewById(R.id.graph);
         putDataOnGraph();
@@ -62,7 +56,7 @@ public class temperatureFragmentView extends Fragment
     private void putDataOnGraph()
     {
         DatabaseHelper databaseHelper = new DatabaseHelper(mContext);
-        Cursor data = databaseHelper.getData("TEMPERATURE");
+        Cursor data = databaseHelper.getData("HUMIDITY");
 
 
         DataPoint[] dataPoint = new DataPoint[data.getCount()];
@@ -70,7 +64,6 @@ public class temperatureFragmentView extends Fragment
 
         while(data.moveToNext())
         {
-            Log.d(TAG, "Temperatura: " + String.valueOf(data.getDouble(0)));
             dataPoint[countData] = new DataPoint(countData, data.getDouble(0));
             countData++;
         }
