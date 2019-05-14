@@ -23,11 +23,18 @@ WiFiClient client;
 MySQL_Connection conn((Client *)&client);
 
 char INSERT_SQL[] = "INSERT INTO projektz_greenhouse_data.sensors_data (humidity, light, temperature) VALUES (20, 21, 22)";
+char INSERT_SQL_PART[] = "INSERT INTO projektz_greenhouse_data.sensors_data (temperature, humidity, light) VALUES (";
+char delimeter[] = ", ";
 char query[128];
 
 IPAddress server_addr(65,19,141,67);          // MySQL server IP
 char user[] = "projektz_gh_user";              // MySQL user login username
 char password[] = "kVwLK5sTx4Wx";        // MySQL user login password
+
+
+  float temperature = 0;
+  float humidity = 0;
+  float light = 0;
 
 void setup() {
 
@@ -83,6 +90,9 @@ void setup() {
   Serial.println("");
   Serial.println("Connected to SQL Server!");  
 
+
+
+
 }
 
 void loop() {
@@ -94,17 +104,20 @@ void loop() {
 //
   delay(10000); //10 sec
 //
-//  sprintf(query, INSERT_SQL, soil_hum);
-//  //sprintf(query, INSERT_SQL, soil_hum, t);
 
-  sprintf(query, INSERT_SQL);
+  sprintf(query, "%s%.2f, %.2f, %.2f)",INSERT_SQL_PART, temperature, humidity, light);
   Serial.println("Recording data.");
   Serial.println(query);
+  
   
   MySQL_Cursor *cur_mem = new MySQL_Cursor(&conn);
   
   cur_mem->execute(query);
 
   delete cur_mem;
+
+  temperature += 1;
+  humidity += 1;
+  light += 1;
 
 }
