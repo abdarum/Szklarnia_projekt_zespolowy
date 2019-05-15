@@ -1,6 +1,6 @@
 # Schematy hardware:
 
-##Schemat blokowy:
+## Schemat blokowy:
 <p align="center">
   <img  src="Schemat_blokowy_hardware.png">
 </p>
