@@ -5,15 +5,15 @@
 Projekt elektroniczny został stworzony w środowisku EasyEda, link do projektu:
 https://easyeda.com/stefanczykdk/projekt-zespo-owy-parapetowa-szklarnia 
 
-![Alt text](Schemat_blokowy_hardware.png?raw=true "Title")
 
-
-<p align="center">
-  <img width="460" height="300" src="Schemat_blokowy_hardware.png">
-</p>
-
+Schemat blokowy:
 <p align="center">
   <img  src="Schemat_blokowy_hardware.png">
 </p>
 
+
+Schemat elektroniczny:
+<p align="center">
+  <img  src="Schematic_Projekt-Zespo-owy-Parapetowa-szklarnia.png">
+</p>
 
