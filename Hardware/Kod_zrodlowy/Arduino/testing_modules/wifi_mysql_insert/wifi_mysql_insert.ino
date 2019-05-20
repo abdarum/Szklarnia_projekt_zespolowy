@@ -35,14 +35,8 @@ char password[] = "kVwLK5sTx4Wx";        // MySQL user login password
   float temperature = 0;
   float humidity = 0;
   float light = 0;
-
-void setup() {
-
-  Serial.begin(9600);
-
-  pinMode(sensorPin1, INPUT);
-  //pinMode(sensorPin2, INPUT);
-
+  
+void setup_wifi(){
   Serial.println("Initialising connection");
   Serial.print(F("Setting static ip to : "));
   Serial.println(ip);
@@ -79,8 +73,10 @@ void setup() {
   Serial.print("Assigned IP: ");
   Serial.print(WiFi.localIP());
   Serial.println("");
+}
 
-  Serial.println("Connecting to database");
+void connect_to_database(){
+    Serial.println("Connecting to database");
 
   while (conn.connect(server_addr, 3306, user, password) != true) {
     delay(200);
@@ -89,32 +85,37 @@ void setup() {
 
   Serial.println("");
   Serial.println("Connected to SQL Server!");  
-
-
-
-
 }
 
-void loop() {
+void close_database(){
+    conn.close();
+}
+void setup() {
 
-//  int soil_hum = 1024 - analogRead(sensorPin1);
-//  //float t = dht.readTemperature();
-//
-//  //Serial.println(t);
-//
-  delay(10000); //10 sec
-//
+  Serial.begin(9600);
+  setup_wifi();
+}
 
-  sprintf(query, "%s%.2f, %.2f, %.2f)",INSERT_SQL_PART, temperature, humidity, light);
+void insertValues(float temperature_insert, float humidity_insert,
+  float light_insert){
+  connect_to_database();
+  sprintf(query, "%s%.2f, %.2f, %.2f)",INSERT_SQL_PART, temperature_insert,
+      humidity_insert, light_insert);
   Serial.println("Recording data.");
   Serial.println(query);
   
-  
   MySQL_Cursor *cur_mem = new MySQL_Cursor(&conn);
-  
   cur_mem->execute(query);
-
   delete cur_mem;
+  close_database();
+  Serial.print( "\n" );
+}
+
+
+void loop() {
+  delay(10000); //10 sec
+
+  insertValues(temperature, humidity, light);
 
   temperature += 1;
   humidity += 1;
