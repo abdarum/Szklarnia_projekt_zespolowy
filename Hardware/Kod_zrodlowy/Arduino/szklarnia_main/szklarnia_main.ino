@@ -175,6 +175,7 @@ void executors_test(){
 }
 
 void sensors_test(){
+  Serial.println("********** SENSORS TEST **********");
   int light = analogRead(A0);
   Serial.print(light);
   Serial.print(" | ");
@@ -187,6 +188,27 @@ void sensors_test(){
   Serial.print(temperatura);
   Serial.println("*C");
 }
+
+void insert_sensors_data(){
+  Serial.println("********** INSERT SENSORS DATA **********");
+  int light = analogRead(A0);
+  Serial.print("Sensors_insert: ");
+  Serial.print(light);
+  Serial.print(" | ");
+
+  int humidity = dht.getHumidity();
+  Serial.print(humidity);
+  Serial.print("%RH | ");
+  
+  int temperature = dht.getTemperature();
+  Serial.print(temperature);
+  Serial.println("*C");
+  if ((humidity >= 0 && humidity <= 100) || 
+  (temperature >= -50 && temperature <= 100)){
+    insertValues(temperature, humidity, light);    
+  }
+}
+
 void setup_sensors(){
   dht.setup(DHT11_SENS);  
 }
@@ -210,6 +232,7 @@ void setup() {
   setup_wifi();
   setup_executors();
   setup_sensors();
+  delay(2500);
 }
 
 void loop() {
@@ -218,12 +241,14 @@ void loop() {
   Serial.println("********** MAIN LOOP **********");
   Serial.println("*******************************");
   Serial.println();
-  insertValues(temperature, humidity, light);
+   sensors_test();
+  delay(2500);
+//  insertValues(temperature, humidity, light);
+  insert_sensors_data();
   delay(5000);
   selectValues();
   delay(2500);
-  sensors_test();
-  delay(2500);
+
 //  executors_test(); //Należy podłączyć 12V żeby było widać efekty
   
   temperature += 1;
