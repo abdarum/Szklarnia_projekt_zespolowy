@@ -39,11 +39,11 @@ void executors_test(){
   delay(2000);
 
 }
-void sensors_setup(){
-  dht.setup(DHT11_PIN);  
+void setup_sensors(){
+  dht.setup(DHT11_SENS);  
 }
 
-void setup_sensors_and_executors(){
+void setup_executors(){
   pinMode(LED_ESP, OUTPUT);
   digitalWrite(LED_ESP, HIGH);
   pinMode(LED_OUT, OUTPUT);
@@ -57,7 +57,8 @@ void setup_sensors_and_executors(){
 }
 
 void setup() {
-  setup_sensors_and_executors();
+  setup_executors();
+  setup_sensors();
   Serial.begin(9600);
 }
 
@@ -76,5 +77,5 @@ void loop() {
   Serial.print(temperatura);
   Serial.println("*C");
   
-  delay(1000); 
+  delay(3000); 
 }
