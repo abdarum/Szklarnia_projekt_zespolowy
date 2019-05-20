@@ -15,6 +15,12 @@ DHT dht;
 void turn_on_led_output(){digitalWrite(LED_OUT, LOW);}
 void turn_off_led_output(){digitalWrite(LED_OUT, HIGH);}
 
+void turn_on_pelt_heat(){digitalWrite(PELT_HEAT, HIGH);}
+void turn_off_pelt_heat(){digitalWrite(PELT_HEAT, LOW);}
+
+void turn_on_pelt_cool(){digitalWrite(PELT_COOL, HIGH);}
+void turn_off_pelt_cool(){digitalWrite(PELT_COOL, LOW);}
+
 void executors_test(){
   delay(500);
   digitalWrite(LED_ESP, LOW);
@@ -27,17 +33,29 @@ void executors_test(){
   turn_off_led_output();
   delay(2000);
   
-  
-  digitalWrite(PELT_HEAT, HIGH);
+  turn_on_pelt_heat();
   delay(4000);
-  digitalWrite(PELT_HEAT, LOW);
+  turn_off_pelt_heat();
   delay(2000);
   
-  digitalWrite(PELT_COOL, HIGH);
+  turn_on_pelt_cool();
   delay(4000);
-  digitalWrite(PELT_COOL, LOW);
+  turn_off_pelt_cool();
   delay(2000);
+}
 
+void sensors_test(){
+  int light = analogRead(A0);
+  Serial.print(light);
+  Serial.print(" | ");
+
+  int wilgotnosc = dht.getHumidity();
+  Serial.print(wilgotnosc);
+  Serial.print("%RH | ");
+  
+  int temperatura = dht.getTemperature();
+  Serial.print(temperatura);
+  Serial.println("*C");
 }
 void setup_sensors(){
   dht.setup(DHT11_SENS);  
@@ -53,7 +71,6 @@ void setup_executors(){
   pinMode(PELT_COOL, OUTPUT);
   digitalWrite(PELT_COOL, LOW);
   pinMode(DHT11_SENS, INPUT);
-//  pinMode(LDR_SENS, INPUT);
 }
 
 void setup() {
@@ -63,19 +80,7 @@ void setup() {
 }
 
 void loop() {
-//  executors_test()
-
-  int light = analogRead(A0);
-  Serial.println(light);
-
-  int wilgotnosc = dht.getHumidity();
-  Serial.print(wilgotnosc);
-  Serial.print("%RH | ");
-  
-  //Pobranie informacji o temperaturze
-  int temperatura = dht.getTemperature();
-  Serial.print(temperatura);
-  Serial.println("*C");
-  
+//  executors_test();
+  sensors_test();
   delay(3000); 
 }
