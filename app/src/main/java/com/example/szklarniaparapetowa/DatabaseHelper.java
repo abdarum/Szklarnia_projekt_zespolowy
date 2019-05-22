@@ -88,4 +88,32 @@ public class DatabaseHelper extends SQLiteOpenHelper
 
         return sqLiteDatabase.rawQuery(query, null);
     }
+
+    public boolean putDataFromJson(double temp, double light, double humidity)
+    {
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+
+
+        //TODO chwilo z palca wpisywane
+        contentValues.put(COL2_TEMPERATURE, temp);
+        //contentValues.put(COL3_TEMPERATURE_REFERENCE_SIGNAL, data[1]);
+        contentValues.put(COL4_LIGHT_INTENSITY, light);
+        //contentValues.put(COL5_LIGHT_INTENSITY_REFERENCE_SIGNAL, data[3]);
+        contentValues.put(COL6_HUMIDITY, humidity);
+
+        long result = sqLiteDatabase.insert(TABLE_NAME, null, contentValues);
+
+
+        return (result == -1);
+    }
+
+    public void removeData()
+    {
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        String query = "DELETE FROM " + TABLE_NAME;
+        sqLiteDatabase.execSQL(query);
+        String query2 = "DELETE FROM sqlite_sequence WHERE name = 'RawData'";
+        sqLiteDatabase.execSQL(query2);
+    }
 }

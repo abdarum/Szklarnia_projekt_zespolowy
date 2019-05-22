@@ -70,7 +70,7 @@ public class TemperatureFragmentView extends Fragment
 
         while(data.moveToNext())
         {
-            Log.d(TAG, "Temperatura: " + String.valueOf(data.getDouble(0)));
+            //Log.d(TAG, "Temperatura: " + String.valueOf(data.getDouble(0)));
             dataPoint[countData] = new DataPoint(countData, data.getDouble(0));
             countData++;
         }
