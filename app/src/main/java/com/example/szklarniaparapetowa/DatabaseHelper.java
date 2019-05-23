@@ -13,7 +13,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
     private static final String TAG = "DatabaseHelper";
     private static final String TABLE_NAME = "RawData";
     private static final String COL0_ID = "ID";
-    private static final String COL1_TIME = "TIME";
+    private static final String COL1_TIME = "TIMESTAMP";
     private static final String COL2_TEMPERATURE = "TEMPERATURE";
     private static final String COL3_TEMPERATURE_REFERENCE_SIGNAL = "TEMPERATURE_REFERENCE_SIGNAL";
     private static final String COL4_LIGHT_INTENSITY = "LIGHT_INTENSITY";
@@ -30,7 +30,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
     public void onCreate(SQLiteDatabase sqLiteDatabase)
     {
         String createTable = "CREATE TABLE " + TABLE_NAME + " (" + COL0_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COL1_TIME + " DATETIME DEFAULT(STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW')), " +
+                //COL1_TIME + " DATETIME DEFAULT(STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW')), " +
+                COL1_TIME + " DATETIME, " +
                 COL2_TEMPERATURE + " REAL, " +
                 COL3_TEMPERATURE_REFERENCE_SIGNAL + " REAL, " +
                 COL4_LIGHT_INTENSITY + " REAL, " +
@@ -60,7 +61,6 @@ public class DatabaseHelper extends SQLiteOpenHelper
         ContentValues contentValues = new ContentValues();
 
 
-        //TODO chwilo z palca wpisywane
         contentValues.put(COL2_TEMPERATURE, data[0]);
         contentValues.put(COL3_TEMPERATURE_REFERENCE_SIGNAL, data[1]);
         contentValues.put(COL4_LIGHT_INTENSITY, data[2]);
@@ -84,18 +84,18 @@ public class DatabaseHelper extends SQLiteOpenHelper
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         String query;
 
-        query = "SELECT " /*+ COL1_TIME + " "*/ + columnName + " FROM " + TABLE_NAME + " ORDER BY " + COL1_TIME;
+        query = "SELECT " + COL1_TIME + ", " + columnName + " FROM " + TABLE_NAME + " ORDER BY " + COL1_TIME;
 
         return sqLiteDatabase.rawQuery(query, null);
     }
 
-    public boolean putDataFromJson(double temp, double light, double humidity)
+    public boolean putDataFromJson(String date, double temp, double light, double humidity)
     {
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
 
-        //TODO chwilo z palca wpisywane
+        contentValues.put(COL1_TIME, date);
         contentValues.put(COL2_TEMPERATURE, temp);
         //contentValues.put(COL3_TEMPERATURE_REFERENCE_SIGNAL, data[1]);
         contentValues.put(COL4_LIGHT_INTENSITY, light);

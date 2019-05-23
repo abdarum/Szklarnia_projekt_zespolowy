@@ -44,10 +44,11 @@ public class JsonHandling extends AsyncTask<Void, Void, String> {
                 for (int n = 0; n < jsonArray.length(); n++) {
                     try {
                         object = jsonArray.getJSONObject(n);
+                        String date = object.getString("timestamp");
                         double temp = Double.valueOf(object.getString("temperature"));
                         double humidity = Double.valueOf(object.getString("humidity"));
                         double light = Double.valueOf(object.getString("light"));
-                        db.putDataFromJson(temp, light, humidity);
+                        db.putDataFromJson(date, temp, light, humidity);
                     } catch (Exception e) {}
                 }
             } catch (final JSONException e) { }

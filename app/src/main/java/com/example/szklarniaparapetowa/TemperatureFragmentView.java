@@ -11,9 +11,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
+
+import org.honorato.multistatetogglebutton.MultiStateToggleButton;
+import org.honorato.multistatetogglebutton.ToggleButton;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class TemperatureFragmentView extends Fragment
 {
@@ -53,6 +62,16 @@ public class TemperatureFragmentView extends Fragment
         graph = view.findViewById(R.id.graph);
         putDataOnGraph();
 
+
+        MultiStateToggleButton button = view.findViewById(R.id.toggleButton);
+        button.setOnValueChangedListener(new ToggleButton.OnValueChangedListener() {
+            @Override
+            public void onValueChanged(int position) {
+                Log.d(TAG, "Position: " + position);
+            }
+        });
+        button.setValue(0);
+
         return view;
     }
 
@@ -70,13 +89,33 @@ public class TemperatureFragmentView extends Fragment
 
         while(data.moveToNext())
         {
-            //Log.d(TAG, "Temperatura: " + String.valueOf(data.getDouble(0)));
-            dataPoint[countData] = new DataPoint(countData, data.getDouble(0));
+            String s= data.getString(0);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.GERMAN);
+            try {
+                Date d=  dateFormat.parse(s);
+                dataPoint[countData] = new DataPoint(d, data.getDouble(1));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
             countData++;
         }
 
         LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(dataPoint);
 
+        graph.getGridLabelRenderer().setLabelFormatter(new DefaultLabelFormatter(){
+            @Override
+            public String formatLabel(double value, boolean isValueX){
+                if(isValueX)
+                {
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd.MM HH:ss", Locale.GERMAN);
+                    return sdf.format(new Date((long)value));
+                }else{
+                    return super.formatLabel(value, isValueX);
+                }
+            }
+        });
+        graph.getGridLabelRenderer().setHorizontalLabelsAngle(90);
         graph.addSeries(series);
         graph.getViewport().setScalable(true);
     }

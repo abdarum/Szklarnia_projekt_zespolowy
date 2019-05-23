@@ -3,4 +3,10 @@
     <string name="temperature">Temperature</string>
     <string name="light">Light</string>
     <string name="humidity">Humidity</string>
+    <string-array name="planets_array">
+        <item>Month</item>
+        <item>Week</item>
+        <item>3 Days</item>
+        <item>Day</item>
+    </string-array>
 </resources>
