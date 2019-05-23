@@ -17,6 +17,9 @@ DHT dht;
 
 char ssid[] = "Stefan";                 // Network Name
 char pass[] = "116e1138a1fc";                 // Network Password
+
+//char ssid[] = "Test_arduino";                 // Network Name
+//char pass[] = "test_arduino";                 // Network Password
 byte mac[6];
 
 WiFiServer server(80);
@@ -37,9 +40,26 @@ char user[] = "projektz_gh_user";              // MySQL user login username
 char password[] = "kVwLK5sTx4Wx";        // MySQL user login password
 
 
-  float temperature = 0;
-  float humidity = 0;
-  float light = 0;
+bool heating_auto = 0;
+bool cooling_auto = 0;
+bool light_auto = 0;
+
+bool heating_current = 0;
+bool cooling_current = 0;
+bool light_current = 0;
+
+void turn_on_led_esp(){digitalWrite(LED_ESP, LOW);}
+void turn_off_led_esp(){digitalWrite(LED_ESP, HIGH);}
+
+void turn_on_led_output(){digitalWrite(LED_OUT, LOW);}
+void turn_off_led_output(){digitalWrite(LED_OUT, HIGH);}
+
+void turn_on_pelt_heat(){digitalWrite(PELT_HEAT, HIGH);}
+void turn_off_pelt_heat(){digitalWrite(PELT_HEAT, LOW);}
+
+void turn_on_pelt_cool(){digitalWrite(PELT_COOL, HIGH);}
+void turn_off_pelt_cool(){digitalWrite(PELT_COOL, LOW);}
+
   
 void setup_wifi(){
   Serial.println("Initialising connection");
@@ -50,6 +70,8 @@ void setup_wifi(){
   Serial.println("");
   Serial.print("Connecting to ");
   Serial.println(ssid);
+  WiFi.mode(WIFI_STA);
+  WiFi.hostname("arduino weather"); 
   WiFi.config(ip, gateway, subnet); 
   WiFi.begin(ssid, pass);
 
@@ -87,7 +109,7 @@ void connect_to_database(){
     delay(200);
     Serial.print ( "." );
   }
-
+  turn_on_led_esp();
 //  Serial.println("");
   Serial.println("Connected to SQL Server!");  
   Serial.println("");
@@ -95,6 +117,7 @@ void connect_to_database(){
 
 void close_database(){
     conn.close();
+    turn_off_led_esp();
 }
 
 
@@ -141,15 +164,43 @@ void selectValues(){
   Serial.print( "\n" );
 }
 
+void check_executors_state(){
+  Serial.println("********** CHECK EXECUTION **********");
+  connect_to_database(); 
+  float light_e = 0;
+  float heating_e = 0;
+  float cooling_e = 0; 
+  row_values *row = NULL;
+  MySQL_Cursor *cur_mem = new MySQL_Cursor(&conn);
+  cur_mem->execute(SELECT_SQL);
+  column_names *columns = cur_mem->get_columns();
 
-void turn_on_led_output(){digitalWrite(LED_OUT, LOW);}
-void turn_off_led_output(){digitalWrite(LED_OUT, HIGH);}
-
-void turn_on_pelt_heat(){digitalWrite(PELT_HEAT, HIGH);}
-void turn_off_pelt_heat(){digitalWrite(PELT_HEAT, LOW);}
-
-void turn_on_pelt_cool(){digitalWrite(PELT_COOL, HIGH);}
-void turn_off_pelt_cool(){digitalWrite(PELT_COOL, LOW);}
+  do {
+    row = cur_mem->get_next_row();
+    if (row != NULL) {
+      light_e = atof(row->values[0]);
+      heating_e = atof(row->values[1]);
+      cooling_e = atof(row->values[2]);
+    }
+  } while (row != NULL);
+  delete cur_mem;
+  close_database();
+  
+  if (light_e < 0 || heating_e < 0 || cooling_e < 0){
+    heating_current = heating_auto;
+    cooling_current = cooling_auto;
+    light_current = light_auto;
+  } else {
+    char execution[64];
+    Serial.print("Execution active ");
+    sprintf(execution, "Light: %.2f; Heat: %.2f; Cool: %.2f", light_e, heating_e, cooling_e);
+    Serial.println(execution);
+    Serial.print( "\n" );
+    heating_current = heating_e;
+    cooling_current = cooling_e;
+    light_current = light_e;
+  }
+}
 
 void executors_test(){
   delay(500);
@@ -190,7 +241,7 @@ void sensors_test(){
 }
 
 void insert_sensors_data(){
-  Serial.println("********** INSERT SENSORS DATA **********");
+  Serial.println("********** INSERT SENSORS DATA **********                      !!!");
   int light = analogRead(A0);
   Serial.print("Sensors_insert: ");
   Serial.print(light);
@@ -236,24 +287,25 @@ void setup() {
 }
 
 void loop() {
-  Serial.println();
-  Serial.println("*******************************");
-  Serial.println("********** MAIN LOOP **********");
-  Serial.println("*******************************");
-  Serial.println();
-   sensors_test();
-  delay(2500);
-//  insertValues(temperature, humidity, light);
-  insert_sensors_data();
-  delay(5000);
-  selectValues();
-  delay(2500);
-
-//  executors_test(); //Należy podłączyć 12V żeby było widać efekty
-  
-  temperature += 1;
-  humidity += 1;
-  light += 1;
-
-
+  static unsigned long lastRefreshTimeSensors = 0;
+  static const unsigned long REFRESH_INTERVAL_SENSORS = 60000; // ms 
+  static unsigned long lastRefreshTimeExecutors = 0;
+  static const unsigned long REFRESH_INTERVAL_EXECUTORS = 20000; // ms 
+  if(millis() - lastRefreshTimeExecutors  >= REFRESH_INTERVAL_EXECUTORS){
+    lastRefreshTimeExecutors += REFRESH_INTERVAL_EXECUTORS;
+    Serial.println();
+    Serial.println("*******************************");
+    Serial.println("********** MAIN LOOP **********");
+    Serial.println("*******************************");
+    Serial.println();
+    sensors_test();
+//    selectValues();
+    check_executors_state();
+    if(millis() - lastRefreshTimeSensors >= REFRESH_INTERVAL_SENSORS)
+    {
+      lastRefreshTimeSensors += REFRESH_INTERVAL_SENSORS;  
+      insert_sensors_data();
+    }
+  }
+  //  executors_test(); //Należy podłączyć 12V żeby było widać efekty
 }
