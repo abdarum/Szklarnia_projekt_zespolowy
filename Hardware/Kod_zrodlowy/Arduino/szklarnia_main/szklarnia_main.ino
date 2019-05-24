@@ -186,7 +186,8 @@ void check_executors_state(){
   delete cur_mem;
   close_database();
   
-  if (light_e < 0 || heating_e < 0 || cooling_e < 0){
+  if (light_e < 0 || heating_e < 0 || cooling_e < 0 || 
+        (heating_e > 0 && cooling_e > 0)){
     heating_current = heating_auto;
     cooling_current = cooling_auto;
     light_current = light_auto;
