@@ -3,6 +3,7 @@ package com.example.szklarniaparapetowa;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
@@ -30,6 +32,10 @@ public class LightFragmentView extends Fragment
     private GraphView graph;
     protected Context mContext;
     private final String TAG = "LightFragment";
+    private boolean mControl = false;
+    private boolean mControlHumiditi = false;
+    private boolean mControlTemp = false;
+    private boolean mControlLight = false;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
@@ -67,6 +73,145 @@ public class LightFragmentView extends Fragment
         });
         button.setValue(0);
 
+        final Button controlButton = view.findViewById(R.id.controlButton);
+        final Button controlLightButton = view.findViewById(R.id.controlLightButton);
+        final Button controlHumidityButton = view.findViewById(R.id.controlHumidityButton);
+        final Button controlTempButton = view.findViewById(R.id.controlTempButton);
+
+        if(mControl){
+            controlButton.setBackgroundColor(Color.GREEN);
+            if (mControlLight)
+            {
+                controlLightButton.setBackgroundColor(Color.GREEN);
+            } else
+            {
+                controlLightButton.setBackgroundColor(Color.RED);
+            }
+
+            if (mControlHumiditi)
+            {
+                controlHumidityButton.setBackgroundColor(Color.GREEN);
+            } else
+            {
+                controlHumidityButton.setBackgroundColor(Color.RED);
+            }
+
+            if (mControlTemp)
+            {
+                controlTempButton.setBackgroundColor(Color.GREEN);
+            } else
+            {
+                controlTempButton.setBackgroundColor(Color.RED);
+            }
+
+        }
+        else{
+            controlButton.setBackgroundColor(Color.RED);
+            controlLightButton.setBackgroundColor(Color.GRAY);
+            controlHumidityButton.setBackgroundColor(Color.GRAY);
+            controlTempButton.setBackgroundColor(Color.GRAY);
+
+        }
+
+
+        controlButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if(mControl){
+                    mControl = false;
+                    mControlHumiditi = false;
+                    mControlTemp = false;
+                    mControlLight = false;
+
+                    controlButton.setBackgroundColor(Color.RED);
+                    controlLightButton.setBackgroundColor(Color.GRAY);
+                    controlHumidityButton.setBackgroundColor(Color.GRAY);
+                    controlTempButton.setBackgroundColor(Color.GRAY);
+
+                }
+                else{
+                    mControl = true;
+                    controlButton.setBackgroundColor(Color.GREEN);
+
+                    if (mControlLight)
+                    {
+                        controlLightButton.setBackgroundColor(Color.GREEN);
+                    } else
+                    {
+                        controlLightButton.setBackgroundColor(Color.RED);
+                    }
+
+                    if (mControlHumiditi)
+                    {
+                        controlHumidityButton.setBackgroundColor(Color.GREEN);
+                    } else
+                    {
+                        controlHumidityButton.setBackgroundColor(Color.RED);
+                    }
+
+                    if (mControlTemp)
+                    {
+                        controlTempButton.setBackgroundColor(Color.GREEN);
+                    } else
+                    {
+                        controlTempButton.setBackgroundColor(Color.RED);
+                    }
+                }
+
+            }
+        });
+
+        controlLightButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if(mControl)
+                {
+                    if (mControlLight)
+                    {
+                        mControlLight = false;
+                        controlLightButton.setBackgroundColor(Color.RED);
+                    } else
+                    {
+                        mControlLight = true;
+                        controlLightButton.setBackgroundColor(Color.GREEN);
+                    }
+                }
+            }
+        });
+
+        controlHumidityButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if(mControl)
+                {
+                    if (mControlHumiditi)
+                    {
+                        mControlHumiditi = false;
+                        controlHumidityButton.setBackgroundColor(Color.RED);
+                    } else
+                    {
+                        mControlHumiditi = true;
+                        controlHumidityButton.setBackgroundColor(Color.GREEN);
+                    }
+                }
+
+            }
+        });
+
+        controlTempButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if(mControl)
+                {
+                    if (mControlTemp)
+                    {
+                        mControlTemp = false;
+                        controlTempButton.setBackgroundColor(Color.RED);
+                    } else
+                    {
+                        mControlTemp = true;
+                        controlTempButton.setBackgroundColor(Color.GREEN);
+                    }
+                }
+
+            }
+        });
         return view;
     }
 

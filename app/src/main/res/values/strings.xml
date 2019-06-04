@@ -3,6 +3,7 @@
     <string name="temperature">Temperature</string>
     <string name="light">Light</string>
     <string name="humidity">Humidity</string>
+    <string name="on_off_control">On/Off Control</string>
     <string-array name="planets_array">
         <item>Month</item>
         <item>Week</item>

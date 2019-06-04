@@ -12,10 +12,9 @@
         android:layout_height="200dip"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
+        android:layout_marginTop="100dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -35,5 +34,59 @@
         app:layout_constraintBottom_toTopOf="@+id/graph"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/controlButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:text="@string/on_off_control"
+        android:textColor="#ffffff"
+        android:theme="@style/Button1Style"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/graph" />
+
+    <Button
+        android:id="@+id/controlLightButton"
+        android:layout_width="125dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:text="@string/light"
+        app:layout_constraintEnd_toStartOf="@+id/controlHumidityButton"
+        app:layout_constraintStart_toEndOf="@+id/controlTempButton"
+        app:layout_constraintTop_toBottomOf="@+id/controlButton"
+        android:textColor="#ffffff"
+        android:theme="@style/Button1Style"/>
+
+    <Button
+        android:id="@+id/controlHumidityButton"
+        android:layout_width="125dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/humidity"
+        app:layout_constraintEnd_toEndOf="@+id/controlButton"
+        app:layout_constraintTop_toBottomOf="@+id/controlButton"
+        android:theme="@style/Button1Style"
+        android:textColor="#ffffff" />
+
+    <Button
+        android:id="@+id/controlTempButton"
+        android:layout_width="125dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/temperature"
+        app:layout_constraintStart_toStartOf="@+id/controlButton"
+        app:layout_constraintTop_toBottomOf="@+id/controlButton"
+        android:theme="@style/Button1Style"
+        android:textColor="#ffffff" />
 
 </android.support.constraint.ConstraintLayout>
