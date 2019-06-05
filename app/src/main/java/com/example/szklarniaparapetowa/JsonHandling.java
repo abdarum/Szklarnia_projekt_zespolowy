@@ -22,17 +22,27 @@ import java.util.HashMap;
 import java.util.ArrayList;
 
 public class JsonHandling extends AsyncTask<Void, Void, String> {
-    private String url = "http://projektz.heliohost.org/test/db_test.php";
+    private static String sensorUrl = "http://projektz.heliohost.org/test/db_test.php";
+    private static String executorUrl = "http://projektz.heliohost.org/test/excitation.php";
+    private static String url = "http://projektz.heliohost.org/test/db_test.php";
+    private static String url2 = "http://projektz.heliohost.org/test/excitation.php";
     DatabaseHelper db = new DatabaseHelper(MainActivity.mycontext);
 
     public JsonHandling() {}
 
+    public void setExecutorUrl(String urlIn){
+        url = executorUrl + "?" + urlIn;
+    }
+
+
+    public void setSensorUrl(){
+        url=sensorUrl;
+    }
+
     @Override
     protected String doInBackground(Void... params) {
         HttpHandler sh = new HttpHandler();
-
         String jsonStr = sh.makeServiceCall(url);
-
         return jsonStr;
     }
 

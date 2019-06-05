@@ -6,6 +6,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -35,11 +36,19 @@ public class MainActivity extends AppCompatActivity
 
 
         json = new JsonHandling();
-        /*db.removeData();
+
+
+        db.removeData();
         try {
-            //jsonStr = json.execute().get();
-            json.getData(jsonStr = json.execute().get());
-        }catch(Exception e){}*/
+            json.setSensorUrl();
+            Log.e("URL_TEST", "test1");
+            jsonStr = json.execute().get();
+            Log.e("URL_TEST", "test2");
+            json.getData(jsonStr);
+            Log.e("URL_TEST", "test3");
+        }catch(Exception e){            Log.e("URL_TEST", "test sens err");}
+
+
     }
 
 }
