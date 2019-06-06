@@ -7,8 +7,8 @@
 
 #define LED_ESP D9
 #define LED_OUT D6
-#define PELT_HEAT D7
-#define PELT_COOL D8
+#define PELT_HEAT D8
+#define PELT_COOL D7
 
 #define DHT11_SENS D5
 #define LDR_SENS A0
@@ -62,14 +62,14 @@ void turn_off_pelt_cool(){digitalWrite(PELT_COOL, LOW);}
 
   
 void setup_wifi(){
-  Serial.println("Initialising connection");
-  Serial.print(F("Setting static ip to : "));
-  Serial.println(ip);
+  //Serial.println("Initialising connection");
+  //Serial.print(F("Setting static ip to : "));
+  //Serial.println(ip);
 
-  Serial.println("");
-  Serial.println("");
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
+  //Serial.println("");
+  //Serial.println("");
+  //Serial.print("Connecting to ");
+  //Serial.println(ssid);
   WiFi.mode(WIFI_STA);
   WiFi.hostname("arduino weather"); 
   WiFi.config(ip, gateway, subnet); 
@@ -77,42 +77,42 @@ void setup_wifi(){
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(200);
-    Serial.print(".");
+    //Serial.print(".");
   }
 
-  Serial.println("");
-  Serial.println("WiFi Connected");
+  //Serial.println("");
+  //Serial.println("WiFi Connected");
 
   WiFi.macAddress(mac);
-  Serial.print("MAC: ");
-  Serial.print(mac[5],HEX);
-  Serial.print(":");
-  Serial.print(mac[4],HEX);
-  Serial.print(":");
-  Serial.print(mac[3],HEX);
-  Serial.print(":");
-  Serial.print(mac[2],HEX);
-  Serial.print(":");
-  Serial.print(mac[1],HEX);
-  Serial.print(":");
-  Serial.println(mac[0],HEX);
-  Serial.println("");
-  Serial.print("Assigned IP: ");
-  Serial.print(WiFi.localIP());
-  Serial.println("");
+  //Serial.print("MAC: ");
+  //Serial.print(mac[5],HEX);
+  //Serial.print(":");
+  //Serial.print(mac[4],HEX);
+  //Serial.print(":");
+  //Serial.print(mac[3],HEX);
+  //Serial.print(":");
+  //Serial.print(mac[2],HEX);
+  //Serial.print(":");
+  //Serial.print(mac[1],HEX);
+  //Serial.print(":");
+  //Serial.println(mac[0],HEX);
+  //Serial.println("");
+  //Serial.print("Assigned IP: ");
+  //Serial.print(WiFi.localIP());
+  //Serial.println("");
 }
 
 void connect_to_database(){
-    Serial.println("Connecting to database");
+    //Serial.println("Connecting to database");
 
   while (conn.connect(server_addr, 3306, user, password) != true) {
     delay(200);
-    Serial.print ( "." );
+    //Serial.print ( "." );
   }
   turn_on_led_esp();
-//  Serial.println("");
-  Serial.println("Connected to SQL Server!");  
-  Serial.println("");
+//  //Serial.println("");
+  //Serial.println("Connected to SQL Server!");  
+  //Serial.println("");
 }
 
 void close_database(){
@@ -123,22 +123,22 @@ void close_database(){
 
 void insertValues(float temperature_insert, float humidity_insert,
   float light_insert){
-  Serial.println("********** INSERT **********");
+  //Serial.println("********** INSERT **********");
   connect_to_database();
   sprintf(query, "%s%.2f, %.2f, %.2f)",INSERT_SQL_PART, temperature_insert,
       humidity_insert, light_insert);
-  Serial.println("Recording data.");
-  Serial.println(query);
+  //Serial.println("Recording data.");
+  //Serial.println(query);
   
   MySQL_Cursor *cur_mem = new MySQL_Cursor(&conn);
   cur_mem->execute(query);
   delete cur_mem;
   close_database();
-  Serial.print( "\n" );
+  //Serial.print( "\n" );
 }
 
 void selectValues(){
-  Serial.println("********** SELECT **********");
+  //Serial.println("********** SELECT **********");
   connect_to_database(); 
   float light_e = 0;
   float heating_e = 0;
@@ -158,14 +158,14 @@ void selectValues(){
   } while (row != NULL);
   char execution[64];
   sprintf(execution, "Light: %.2f; Heat: %.2f; Cool: %.2f", light_e, heating_e, cooling_e);
-  Serial.println(execution);
+  //Serial.println(execution);
   delete cur_mem;
   close_database();
-  Serial.print( "\n" );
+  //Serial.print( "\n" );
 }
 
 void check_executors_state(){
-  Serial.println("********** CHECK EXECUTION **********");
+  //Serial.println("********** CHECK EXECUTION **********");
   connect_to_database(); 
   float light_e = 0;
   float heating_e = 0;
@@ -193,13 +193,53 @@ void check_executors_state(){
     light_current = light_auto;
   } else {
     char execution[64];
-    Serial.print("Execution active ");
+    //Serial.print("Execution active ");
     sprintf(execution, "Light: %.2f; Heat: %.2f; Cool: %.2f", light_e, heating_e, cooling_e);
-    Serial.println(execution);
-    Serial.print( "\n" );
+    //Serial.println(execution);
+    //Serial.print( "\n" );
     heating_current = heating_e;
     cooling_current = cooling_e;
     light_current = light_e;
+  }
+}
+
+void automatic_controll(){
+  int light = analogRead(A0);
+  int temperatura = dht.getTemperature();
+  if (temperatura < 20){
+//    turn_on_pelt_heat();
+    heating_auto = 1;
+  }
+  if (temperatura > 21){
+//    turn_off_pelt_heat();
+    heating_auto = 0;
+  }
+  if (temperatura < 22){
+//    turn_off_pelt_cool();
+    cooling_auto = 0;
+  }
+  if (temperatura > 23){
+//    turn_on_pelt_cool();
+    cooling_auto = 1;
+  }
+}
+
+
+void set_outputs(){
+  if(heating_current == 1){
+    turn_on_pelt_heat();
+  } else {
+    turn_off_pelt_heat();
+  }
+  if(cooling_current == 1) {
+    turn_on_pelt_cool();    
+  } else {
+    turn_off_pelt_cool();    
+  }
+  if(light_current == 1) {
+    turn_on_led_output();
+  } else {
+    turn_off_led_output();
   }
 }
 
@@ -227,34 +267,34 @@ void executors_test(){
 }
 
 void sensors_test(){
-  Serial.println("********** SENSORS TEST **********");
+  //Serial.println("********** SENSORS TEST **********");
   int light = analogRead(A0);
-  Serial.print(light);
-  Serial.print(" | ");
+  //Serial.print(light);
+  //Serial.print(" | ");
 
   int wilgotnosc = dht.getHumidity();
-  Serial.print(wilgotnosc);
-  Serial.print("%RH | ");
+  //Serial.print(wilgotnosc);
+  //Serial.print("%RH | ");
   
   int temperatura = dht.getTemperature();
-  Serial.print(temperatura);
-  Serial.println("*C");
+  //Serial.print(temperatura);
+  //Serial.println("*C");
 }
 
 void insert_sensors_data(){
-  Serial.println("********** INSERT SENSORS DATA **********                      !!!");
+  //Serial.println("********** INSERT SENSORS DATA **********                      !!!");
   int light = analogRead(A0);
-  Serial.print("Sensors_insert: ");
-  Serial.print(light);
-  Serial.print(" | ");
+  //Serial.print("Sensors_insert: ");
+  //Serial.print(light);
+  //Serial.print(" | ");
 
   int humidity = dht.getHumidity();
-  Serial.print(humidity);
-  Serial.print("%RH | ");
+  //Serial.print(humidity);
+  //Serial.print("%RH | ");
   
   int temperature = dht.getTemperature();
-  Serial.print(temperature);
-  Serial.println("*C");
+  //Serial.print(temperature);
+  //Serial.println("*C");
   if ((humidity >= 0 && humidity <= 100) || 
   (temperature >= -50 && temperature <= 100)){
     insertValues(temperature, humidity, light);    
@@ -279,8 +319,16 @@ void setup_executors(){
 
 
 void setup() {
+  turn_off_pelt_heat();
+  turn_off_pelt_cool();    
+  turn_off_led_output();
+  
+//  heating_current = 0;
+//  cooling_current = 0;
+//  light_current = 0;
+//  set_outputs();
 
-  Serial.begin(9600);
+  //Serial.begin(9600);
   setup_wifi();
   setup_executors();
   setup_sensors();
@@ -291,14 +339,20 @@ void loop() {
   static unsigned long lastRefreshTimeSensors = 0;
   static const unsigned long REFRESH_INTERVAL_SENSORS = 60000; // ms 
   static unsigned long lastRefreshTimeExecutors = 0;
-  static const unsigned long REFRESH_INTERVAL_EXECUTORS = 20000; // ms 
+  static const unsigned long REFRESH_INTERVAL_EXECUTORS = 6000; // ms 
+  static const unsigned long REFRESH_INTERVAL_SENSORS_Auto = 500; // ms 
+  static unsigned long lastRefreshTimeSENSORS_Auto = 0;
+  if(millis() - lastRefreshTimeSENSORS_Auto  >= REFRESH_INTERVAL_SENSORS_Auto){
+    automatic_controll();
+    set_outputs();
+  }
   if(millis() - lastRefreshTimeExecutors  >= REFRESH_INTERVAL_EXECUTORS){
     lastRefreshTimeExecutors += REFRESH_INTERVAL_EXECUTORS;
-    Serial.println();
-    Serial.println("*******************************");
-    Serial.println("********** MAIN LOOP **********");
-    Serial.println("*******************************");
-    Serial.println();
+    //Serial.println();
+    //Serial.println("*******************************");
+    //Serial.println("********** MAIN LOOP **********");
+    //Serial.println("*******************************");
+    //Serial.println();
     sensors_test();
 //    selectValues();
     check_executors_state();
