@@ -89,6 +89,55 @@ public class DatabaseHelper extends SQLiteOpenHelper
         return sqLiteDatabase.rawQuery(query, null);
     }
 
+    public Cursor getDataLastDay(String columnName)
+    {
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        String query;
+
+
+        //query = "SELECT " + COL1_TIME + ", " + columnName + " FROM " + TABLE_NAME +
+          //      " BETWEEN " + "date('now', 'start of day') AND date('now', 'localtime') WHERE "  + COL1_TIME;
+
+
+        query = "SELECT " + COL1_TIME + ", " + columnName + " FROM " + TABLE_NAME +
+            " WHERE " + COL1_TIME + " >= date('now','-1 day') AND " + COL1_TIME +  " < date('now','localtime')";
+
+        return sqLiteDatabase.rawQuery(query, null);
+    }
+
+    public Cursor getDataLast3Days(String columnName)
+    {
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        String query;
+
+
+        //query = "SELECT " + COL1_TIME + ", " + columnName + " FROM " + TABLE_NAME +
+        //      " BETWEEN " + "date('now', 'start of day') AND date('now', 'localtime') WHERE "  + COL1_TIME;
+
+
+        query = "SELECT " + COL1_TIME + ", " + columnName + " FROM " + TABLE_NAME +
+                " WHERE " + COL1_TIME + " >= date('now','-3 days') AND " + COL1_TIME +  " < date('now','localtime')";
+
+        return sqLiteDatabase.rawQuery(query, null);
+    }
+
+    public Cursor getDataLast7Days(String columnName)
+    {
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        String query;
+
+
+        //query = "SELECT " + COL1_TIME + ", " + columnName + " FROM " + TABLE_NAME +
+        //      " BETWEEN " + "date('now', 'start of day') AND date('now', 'localtime') WHERE "  + COL1_TIME;
+
+
+        query = "SELECT " + COL1_TIME + ", " + columnName + " FROM " + TABLE_NAME +
+                " WHERE " + COL1_TIME + " >= date('now','-7 days') AND " + COL1_TIME +  " < date('now','localtime')";
+
+        return sqLiteDatabase.rawQuery(query, null);
+    }
+
+
     public boolean putDataFromJson(String date, double temp, double light, double humidity)
     {
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();

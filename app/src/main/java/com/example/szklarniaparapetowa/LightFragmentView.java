@@ -36,6 +36,7 @@ public class LightFragmentView extends Fragment
     private boolean mControlHumiditi = false;
     private boolean mControlTemp = false;
     private boolean mControlLight = false;
+    int mDataPeriod = 0;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
@@ -69,6 +70,8 @@ public class LightFragmentView extends Fragment
             @Override
             public void onValueChanged(int position) {
                 Log.d(TAG, "Position: " + position);
+                mDataPeriod = position;
+                putDataOnGraph();
             }
         });
         button.setValue(0);
@@ -276,7 +279,27 @@ public class LightFragmentView extends Fragment
     private void putDataOnGraph()
     {
         DatabaseHelper databaseHelper = new DatabaseHelper(mContext);
-        Cursor data = databaseHelper.getData("LIGHT_INTENSITY");
+
+        graph.removeAllSeries();
+
+        Cursor data;
+
+        if(mDataPeriod == 0)
+        {
+            data = databaseHelper.getData("LIGHT_INTENSITY");
+        }
+        else if(mDataPeriod == 1)
+        {
+            data = databaseHelper.getDataLast7Days("LIGHT_INTENSITY");
+        }
+        else if(mDataPeriod == 2)
+        {
+            data = databaseHelper.getDataLast3Days("LIGHT_INTENSITY");
+        }
+        else
+        {
+            data = databaseHelper.getDataLastDay("LIGHT_INTENSITY");
+        }
 
 
         DataPoint[] dataPoint = new DataPoint[data.getCount()];

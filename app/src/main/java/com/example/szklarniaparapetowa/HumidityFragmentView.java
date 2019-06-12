@@ -38,6 +38,7 @@ public class HumidityFragmentView extends Fragment
     private boolean mControlHumiditi = false;
     private boolean mControlTemp = false;
     private boolean mControlLight = false;
+    int mDataPeriod = 0;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
@@ -71,6 +72,8 @@ public class HumidityFragmentView extends Fragment
             @Override
             public void onValueChanged(int position) {
                 Log.d(TAG, "Position: " + position);
+                mDataPeriod = position;
+                putDataOnGraph();
             }
         });
         button.setValue(0);
@@ -281,7 +284,26 @@ public class HumidityFragmentView extends Fragment
     private void putDataOnGraph()
     {
         DatabaseHelper databaseHelper = new DatabaseHelper(mContext);
-        Cursor data = databaseHelper.getData("HUMIDITY");
+        Cursor data;
+
+        graph.removeAllSeries();
+
+        if(mDataPeriod == 0)
+        {
+            data = databaseHelper.getData("HUMIDITY");
+        }
+        else if(mDataPeriod == 1)
+        {
+            data = databaseHelper.getDataLast7Days("HUMIDITY");
+        }
+        else if(mDataPeriod == 2)
+        {
+            data = databaseHelper.getDataLast3Days("HUMIDITY");
+        }
+        else
+        {
+            data = databaseHelper.getDataLastDay("HUMIDITY");
+        }
 
 
         DataPoint[] dataPoint = new DataPoint[data.getCount()];

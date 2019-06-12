@@ -35,6 +35,7 @@ public class TemperatureFragmentView extends Fragment
     private boolean mControlHumiditi = false;
     private boolean mControlTemp = false;
     private boolean mControlLight = false;
+    private int mDataPeriod = 0;
 
 
     public TemperatureFragmentView()
@@ -75,6 +76,8 @@ public class TemperatureFragmentView extends Fragment
             @Override
             public void onValueChanged(int position) {
                 Log.d(TAG, "Position: " + position);
+                mDataPeriod = position;
+                    putDataOnGraph();
             }
         });
         button.setValue(0);
@@ -280,7 +283,28 @@ public class TemperatureFragmentView extends Fragment
     private void putDataOnGraph()
     {
         DatabaseHelper databaseHelper = new DatabaseHelper(mContext);
-        Cursor data = databaseHelper.getData("TEMPERATURE");
+
+        graph.removeAllSeries();
+
+        Cursor data;
+
+        if(mDataPeriod == 0)
+        {
+            data = databaseHelper.getData("TEMPERATURE");
+        }
+        else if(mDataPeriod == 1)
+        {
+            data = databaseHelper.getDataLast7Days("TEMPERATURE");
+        }
+        else if(mDataPeriod == 2)
+        {
+            data = databaseHelper.getDataLast3Days("TEMPERATURE");
+        }
+        else
+        {
+            data = databaseHelper.getDataLastDay("TEMPERATURE");
+        }
+
 
 
         DataPoint[] dataPoint = new DataPoint[data.getCount()];
@@ -317,6 +341,7 @@ public class TemperatureFragmentView extends Fragment
         graph.getGridLabelRenderer().setHorizontalLabelsAngle(90);
         graph.addSeries(series);
         graph.getViewport().setScalable(true);
+
     }
 
 

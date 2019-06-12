@@ -5,7 +5,7 @@
     <string name="humidity">Humidity</string>
     <string name="on_off_control">On/Off Control</string>
     <string-array name="planets_array">
-        <item>Month</item>
+        <item>All</item>
         <item>Week</item>
         <item>3 Days</item>
         <item>Day</item>
